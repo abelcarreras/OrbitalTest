@@ -36,7 +36,7 @@ class AtomicOrbital:
         x = np.arange(-10, 10, 0.01)
         return simps(self.get_function(-10, 10, 0.01), x=x)
 
-    def normalize(self):
+    def normalize_square(self):
         self._pre_exponent /= self.full_integration_square()
 
     def __mul__(self, other):

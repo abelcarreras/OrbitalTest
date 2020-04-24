@@ -43,13 +43,3 @@ class Basis:
 
     def get_overlap_matrix(self):
         return self._overlap
-
-    def get_2nd_order_overlap_matrix(self):
-
-        g1, g2 = self.get_ao_functions()
-        self._2nd_overlap = [[(g1*g1*g1*g1).full_integration(), (g1*g1*g1*g2).full_integration(), (g1*g2*g1*g1).full_integration(), (g1*g2*g1*g2).full_integration()],
-                             [(g1*g1*g2*g1).full_integration(), (g1*g1*g2*g2).full_integration(), (g1*g2*g2*g1).full_integration(), (g1*g2*g2*g2).full_integration()],
-                             [(g2*g1*g1*g1).full_integration(), (g2*g1*g1*g2).full_integration(), (g2*g2*g1*g1).full_integration(), (g2*g2*g1*g2).full_integration()],
-                             [(g2*g1*g2*g1).full_integration(), (g2*g1*g2*g2).full_integration(), (g2*g2*g2*g1).full_integration(), (g2*g2*g2*g2).full_integration()]]
-
-        return self._2nd_overlap
