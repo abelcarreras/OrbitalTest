@@ -31,13 +31,14 @@ print(np.array(basis.get_overlap_matrix()))
 
 basis.plot_basis_function(-2, 2, 0, 0.001)
 basis.plot_basis_function(-2, 2, 1, 0.001)
-print('basis function 1 integral', basis._get_integrate_test(0))
-print('basis function 2 integral', basis._get_integrate_test(1))
+print('basis eigenfunction 1 integral', basis._get_integrate_test(0))
+print('basis eigenfunction 2 integral', basis._get_integrate_test(1))
 
 plt.show()
 
-# Create MO defined by the orthogonal basis
-mo = MolecularOrbital(mo_coefficients=[1/np.sqrt(2), 1/np.sqrt(2)], basis=basis)
+# Create a arbitrary MO defined by the orthogonal basis
+phi = 2  # rad
+mo = MolecularOrbital(mo_coefficients=[np.sin(phi), np.cos(phi)], basis=basis)
 
 plt.title('Molecular orbital')
 mo.plot_function(-2, 2)
@@ -54,6 +55,7 @@ print('total density: ', np.sum(np.multiply(basis.get_overlap_matrix(), mo.get_d
 print('\n------ Symmetry - MO -------')
 
 
+# define symmetry operation
 def apply_inverse_symmetry(basis, center=0.0):
     from copy import deepcopy
     new_basis = deepcopy(basis)
@@ -66,12 +68,13 @@ def apply_inverse_symmetry(basis, center=0.0):
     return new_basis
 
 
+# create a new basis with a symmetry operation applied
 new_basis = apply_inverse_symmetry(basis, center=0.2)
 
-mo = MolecularOrbital(mo_coefficients=[1/np.sqrt(2), 1/np.sqrt(2)], basis=basis)
-mo_i = MolecularOrbital(mo_coefficients=[1/np.sqrt(2), 1/np.sqrt(2)], basis=new_basis)
+# create same MO with a symmetry operation applied
+mo_i = MolecularOrbital(mo_coefficients=[np.sin(phi), np.cos(phi)], basis=new_basis)
 
-plt.title('MO symmetry operation applied')
+plt.title('MO & MO with symmetry operation applied')
 mo.plot_function(-2, 2)
 mo_i.plot_function(-2, 2)
 
@@ -79,11 +82,11 @@ plt.show()
 
 print('overlap mo * mo: ', mo * mo)
 print('overlap mo * mo_i: ', mo * mo_i)
-print('CSM-like mo * mo_i: ', 100 - (mo * mo_i / (mo * mo))*100)
+print('CSM-like mo - mo_i: ', 100 - abs(mo * mo_i / (mo * mo))*100)
 
 
 print('\n------- Symmetry - Electronic density -------')
-# numeric integration of MO
+# numeric integration of MO (testing)
 from scipy.integrate import simps
 x = np.arange(-2, 2, 0.001)
 f1 = mo.get_function(-2, 2, 0.001)**2
@@ -95,6 +98,7 @@ plt.plot(x, fi, label='MO_i^2')
 
 b1, b2 = basis.get_ao_functions()
 
+# test that the density matrix is correct
 dm1 = mo.get_density_matrix_ao()
 f1_test = dm1[0, 0] * np.array(b1.get_function(-2, 2, 0.001)) ** 2 + \
           2 * dm1[1, 0] * np.multiply(b1.get_function(-2, 2, 0.001), b2.get_function(-2, 2, 0.001)) + \
@@ -110,15 +114,13 @@ plt.plot(x, fi_test, '--', label='MO_i^2 (test)')
 plt.legend()
 plt.show()
 
+# numerical calculation of overlaps using calculus (testing)
 print('overlap(num) mo^2 - mo^2:', simps(np.multiply(f1, f1), x=x))
 print('overlap(num) mo_i^2 - mo_i^2:', simps(np.multiply(fi, fi), x=x))
 print('overlap(num) mo^2 - mo_i^2:', simps(np.multiply(f1, fi), x=x))
 
-print(mo.get_density_matrix_mo())
-print(mo_i.get_density_matrix_mo())
-
+# check normalization of tensor product in orthogonal basis (MO)
 print('tensor product dm x dm (MO)')
-
 tp11_mo = np.outer(mo.get_density_matrix_mo(), mo.get_density_matrix_mo())
 print('mo^2 x mo^2')
 print(tp11_mo)
@@ -139,6 +141,7 @@ s_11 = np.array(get_2nd_order_overlap_matrix(basis, basis))
 s_ii = np.array(get_2nd_order_overlap_matrix(new_basis, new_basis))
 s_1i = np.array(get_2nd_order_overlap_matrix(basis, new_basis))
 
+# calculation of overlaps using linear algebra
 print('mo^2 x mo^2')
 print(tp_11_ao)
 print('overlap mo^2 - mo^2: ', np.sum(np.multiply(s_11, tp_11_ao)))
