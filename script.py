@@ -150,8 +150,8 @@ print('trace mo1 * mo2: ', np.trace(tp12))
 tp_11ao = np.outer(mo.get_density_matrix_ao(), mo.get_density_matrix_ao())
 tp_22ao = np.outer(mo2.get_density_matrix_ao(), mo2.get_density_matrix_ao())
 
-tp_12ao = np.outer(mo2.get_density_matrix_ao(), mo.get_density_matrix_ao())
+tp_12ao = np.outer(mo.get_density_matrix_ao(), mo2.get_density_matrix_ao())
 s2 = np.array(basis.get_2nd_order_overlap_matrix())
 
-print('trace ao * ao ->: ', np.sum(np.multiply(s2, tp_12ao)))
+print('overlap 1^2*2^2: ', np.sum(np.multiply(s2, tp_12ao)))
 
